@@ -30,14 +30,19 @@ namespace StudyWebApp
                 options.CheckConsentNeeded = context => true;
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
-
-            services.AddDistributedMemoryCache();
+            //services.AddDistributedMemoryCache();
+            services.AddDistributedRedisCache(options =>
+            {
+                options.Configuration = Configuration.GetConnectionString("RedisConnection");
+                options.InstanceName = "master";
+            });
             services.AddSession(options =>
             {
-                options.IdleTimeout=TimeSpan.FromSeconds(15);
-                options.Cookie.HttpOnly=true;
-                options.Cookie.IsEssential=true;
+                options.IdleTimeout = TimeSpan.FromSeconds(15);
+                options.Cookie.HttpOnly = true;
+                options.Cookie.IsEssential = true;
             });
+            //services.AddSession();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
         }
 
@@ -53,7 +58,8 @@ namespace StudyWebApp
                 app.UseExceptionHandler("/Home/Error");
                 app.UseHsts();
             }
-
+            
+            app.UseDeveloperExceptionPage();
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseCookiePolicy();
