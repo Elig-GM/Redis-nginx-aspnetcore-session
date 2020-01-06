@@ -3,7 +3,10 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc;
+
 using StudyWebApp.Models;
 
 namespace StudyWebApp.Controllers
@@ -12,6 +15,17 @@ namespace StudyWebApp.Controllers
     {
         public IActionResult Index()
         {
+           ViewBag.IP=HttpContext.Features.Get<IHttpConnectionFeature>().LocalIpAddress;
+            ViewBag.Port = HttpContext.Features.Get<IHttpConnectionFeature>().LocalPort;
+            if (string.IsNullOrEmpty(HttpContext.Session.GetString("test")))
+            {
+                ViewBag.se="empty";
+                HttpContext.Session.SetString("test","my value");
+            }
+            else
+            {
+                ViewBag.se= HttpContext.Session.GetString("test");
+            }
             return View();
         }
 
