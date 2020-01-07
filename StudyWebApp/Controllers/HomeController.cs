@@ -6,15 +6,22 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc;
-
+using Microsoft.Extensions.Caching.Distributed;
 using StudyWebApp.Models;
 
 namespace StudyWebApp.Controllers
 {
     public class HomeController : Controller
     {
+        IndexModel m;
+        public HomeController(IDistributedCache cache)
+        {
+            m=new IndexModel(cache);
+        }
         public IActionResult Index()
         {
+            
+            m.OnPostResetCachedTime().Wait();
             HttpContext.Session.Set("What", new byte[] { 1, 2, 3, 4, 5 });
             ViewBag.IP=HttpContext.Features.Get<IHttpConnectionFeature>().RemoteIpAddress;
             ViewBag.Port = HttpContext.Features.Get<IHttpConnectionFeature>().RemotePort;
@@ -34,6 +41,7 @@ namespace StudyWebApp.Controllers
 
         public IActionResult About()
         {
+            ViewBag.C=m.OnGetAsync().Result;
             ViewData["Message"] = "Your application description page.";
 
             return View();
