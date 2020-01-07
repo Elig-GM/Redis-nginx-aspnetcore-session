@@ -10,6 +10,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
+using StackExchange.Redis;
+
 namespace StudyWebApp
 {
     public class Startup
@@ -30,7 +32,9 @@ namespace StudyWebApp
                 options.CheckConsentNeeded = context => true;
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
+
             //services.AddDistributedMemoryCache();
+
             services.AddDistributedRedisCache(options =>
             {
                 options.Configuration = Configuration.GetConnectionString("RedisConnection");
@@ -38,9 +42,8 @@ namespace StudyWebApp
             });
             services.AddSession(options =>
             {
-                options.IdleTimeout = TimeSpan.FromSeconds(15);
-                options.Cookie.HttpOnly = true;
-                options.Cookie.IsEssential = true;
+                options.IdleTimeout = TimeSpan.FromSeconds(100);
+                //options.Cookie.HttpOnly = true;
             });
             //services.AddSession();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
@@ -59,8 +62,8 @@ namespace StudyWebApp
                 app.UseHsts();
             }
             
-            app.UseDeveloperExceptionPage();
-            app.UseHttpsRedirection();
+            //app.UseDeveloperExceptionPage();
+            //app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseCookiePolicy();
             app.UseSession();

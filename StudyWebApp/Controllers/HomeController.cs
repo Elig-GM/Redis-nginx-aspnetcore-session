@@ -15,16 +15,19 @@ namespace StudyWebApp.Controllers
     {
         public IActionResult Index()
         {
-           ViewBag.IP=HttpContext.Features.Get<IHttpConnectionFeature>().LocalIpAddress;
-            ViewBag.Port = HttpContext.Features.Get<IHttpConnectionFeature>().LocalPort;
+            HttpContext.Session.Set("What", new byte[] { 1, 2, 3, 4, 5 });
+            ViewBag.IP=HttpContext.Features.Get<IHttpConnectionFeature>().RemoteIpAddress;
+            ViewBag.Port = HttpContext.Features.Get<IHttpConnectionFeature>().RemotePort;
+            ViewBag.se = "empty";
+           ViewBag.seId= HttpContext.Session.Id;
             if (string.IsNullOrEmpty(HttpContext.Session.GetString("test")))
             {
-                ViewBag.se="empty";
-                HttpContext.Session.SetString("test","my value");
+                ViewBag.se = "empty";
+                HttpContext.Session.SetString("test", "my value");
             }
             else
             {
-                ViewBag.se= HttpContext.Session.GetString("test");
+                ViewBag.se = HttpContext.Session.GetString("test");
             }
             return View();
         }
