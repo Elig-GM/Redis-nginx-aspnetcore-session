@@ -39,11 +39,13 @@ namespace StudyWebApp
             {
                 options.Configuration = Configuration.GetConnectionString("RedisConnection");
                 options.InstanceName = "master";
+                
             });
             services.AddSession(options =>
             {
                 options.IdleTimeout = TimeSpan.FromSeconds(100);
-                //options.Cookie.HttpOnly = true;
+                options.Cookie.HttpOnly = true;
+                options.Cookie.IsEssential=true;
             });
             //services.AddSession();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
