@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-
 using StackExchange.Redis;
 
 namespace StudyWebApp
@@ -26,6 +26,10 @@ namespace StudyWebApp
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            var redis = ConnectionMultiplexer.Connect(Configuration.GetConnectionString("RedisConnection"));
+
+            services.AddDataProtection().PersistKeysToRedis(redis, "DataProtection-Keys");
+            //services.AddDataProtection().SetApplicationName("testapp1");
             services.Configure<CookiePolicyOptions>(options =>
             {
                 // This lambda determines whether user consent for non-essential cookies is needed for a given request.
@@ -39,13 +43,17 @@ namespace StudyWebApp
             {
                 options.Configuration = Configuration.GetConnectionString("RedisConnection");
                 options.InstanceName = "master";
-                
+              
             });
             services.AddSession(options =>
             {
                 options.IdleTimeout = TimeSpan.FromSeconds(100);
                 options.Cookie.HttpOnly = true;
                 options.Cookie.IsEssential=true;
+                //options.Cookie.Name="my.session.cookie";
+                //options.Cookie.Domain= "localhost";
+                //options.Cookie.Path="/";
+                //options.Cookie.SameSite=SameSiteMode.Strict;
             });
             //services.AddSession();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
